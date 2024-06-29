@@ -1,24 +1,38 @@
 import os
 
+def m_ary_search(arr, target):
+    bi = 0
+    ret = -1
 
+    while (bi < len(target)):
+        bi += 1
+        left = 0
+        right = len(arr) - 1
+        while left <= right:
+            mid = left + (right - left) // 2
+            if arr[mid] == target[0:bi]:
+                # print(arr[mid])
+                ret = mid
+                break
+            # elif arr[mid] == target[0:bi]
+            elif arr[mid] < target[0:bi]:
+                left = mid + 1
+            else:
+                right = mid - 1
 
-def matches_with_prefix(uk_word, input_word):
+    return ret
+
+def matches_with_prefix_and_suffix(uk_word, input_word):
     for prefix in prefixes:
-        if prefix + uk_word == input_word:
-            return True
-    return False
-
-
-def matches_with_suffix(uk_word, input_word):
-    for suffix in suffixes:
-        if uk_word + suffix == input_word:
-            return True
+        for suffix in suffixes:
+            if prefix + uk_word + suffix == input_word:
+                return True
     return False
 
 
 def find_word_in_line(uk_word, line, filepath):
     for input_word in line.split():
-        if uk_word == input_word or matches_with_prefix(uk_word, input_word) or matches_with_suffix(uk_word, input_word):
+        if uk_word == input_word or matches_with_prefix_and_suffix(uk_word, input_word):
             print(f"word: '{input_word}' in: '{filepath}'")
             return True
 
@@ -59,18 +73,17 @@ if __name__ == "__main__":
     directory = "/home/roeet/Projects/tyk-docs"
     # NOTE config.toml
     # maybe add .sh .xml?
-    legal_file_extensions = [".html", ".json",
-                             ".md", ".yml", ".yaml", ".css", ".scss"]
+    legal_file_extensions = [".html", ".json", ".md", ".yml", ".yaml", ".css", ".scss", ".sh", ".xml"]
 
     prefixes = [
         "a", "ab", "ac", "ad", "af", "ag", "al", "am", "an", "ap", "ar", "as", "at", "auto",
         "be", "bi", "by", "cata", "circum", "cis", "co", "col", "com", "con", "contra", "counter", "crypto",
         "de", "demi", "di", "dia", "dis", "dys", "e", "ec", "el", "em", "en", "epi", "eu", "ex", "exo", "extra",
         "fore", "hemi", "hetero", "homo", "hyper", "hypo", "neo", "non", "ob", "oct", "omni", "out", "over",
-        "il", "im", "in", "infra", "inter", "intra", "ir", "macro", "mal", "mega", "meta", "micro", "mid", "milli", "mini", "mis", "mono", "multi",
-        "pan", "para", "penta", "per", "peri", "poly", "post", "pre", "pro", "proto", "pseudo", "quad", "quasi",
-        "re", "retro", "semi", "sub", "super", "supra", "sur", "sym", "syn",
-        "tele", "trans", "tri", "ultra", "un", "under", "uni", "up", "vice"
+        "il", "im", "in", "infra", "inter", "intra", "ir", "macro", "mal", "mega", "meta", "micro", "mid", "milli", 
+        "mini", "mis", "mono", "multi", "pan", "para", "penta", "per", "peri", "poly", "post", "pre", "pro", "proto", 
+        "pseudo", "quad", "quasi", "re", "retro", "semi", "sub", "super", "supra", "sur", "sym", "syn", "tele", "trans", 
+        "tri", "ultra", "un", "under", "uni", "up", "vice"
     ]
 
     suffixes = [
@@ -124,4 +137,9 @@ if __name__ == "__main__":
         "tzar", "utilis", "valour", "vandalis", "vaporis", "vapour", "vigour", "waggon", "whisky", "wilful", "woollen", "worshipper",
     ]
 
+    prefixes.sort()
+    suffixes.sort()
+    british_words.sort()
+    print(prefixes[m_ary_search(prefixes, "abeautiful")])
+    exit()
     search_files(directory)
