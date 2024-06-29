@@ -12,9 +12,8 @@ def replace_in_file(file_path):
 def process_directory(directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file.endswith('.txt'):
-                file_path = os.path.join(root, file)
-                replace_in_file(file_path)
+            file_path = os.path.join(root, file)
+            replace_in_file(file_path)
 
 # Specify the directory path here
 
