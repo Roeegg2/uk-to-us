@@ -1,6 +1,3 @@
-string = "My Name Is Josh"
-substring = "Name"
+import string
 
-for word in string.split():
-    if substring == word:
-        print("Match Found")
+print('=' in "abcd=")

@@ -1,42 +1,46 @@
 import os
 
 def m_ary_search(arr, target):
-    bi = 0
-    ret = -1
+    if target == "" or target == None:
+        return True
 
-    while (bi < len(target)):
-        bi += 1
-        left = 0
-        right = len(arr) - 1
-        while left <= right:
-            mid = left + (right - left) // 2
-            if arr[mid] == target[0:bi]:
-                # print(arr[mid])
-                ret = mid
-                break
-            # elif arr[mid] == target[0:bi]
-            elif arr[mid] < target[0:bi]:
-                left = mid + 1
-            else:
-                right = mid - 1
+    left = 0
+    right = len(arr) - 1
 
-    return ret
-
-def matches_with_prefix_and_suffix(uk_word, input_word):
-    for prefix in prefixes:
-        for suffix in suffixes:
-            if prefix + uk_word + suffix == input_word:
-                return True
-    return False
-
-
-def find_word_in_line(uk_word, line, filepath):
-    for input_word in line.split():
-        if uk_word == input_word or matches_with_prefix_and_suffix(uk_word, input_word):
-            print(f"word: '{input_word}' in: '{filepath}'")
+    while left <= right:
+        mid = left + (right - left) // 2
+        if arr[mid] == target:
             return True
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
 
     return False
+
+def remove_chars_from_text(text, chars):
+    trans_table = str.maketrans('', '', chars)
+    return text.translate(trans_table)
+
+def get_word_prefix_suffix(main_word, sub_word):
+    search_in = remove_chars_from_text(main_word.lower(), ',."\';\:!?')
+    index = search_in.find(sub_word)
+    if index != -1:
+        before = main_word[:index]
+        after = main_word[index + len(sub_word):]
+        return True, before, after
+    else:
+        return False, "", ""
+
+def find_word_in_line(uk_word, line, filepath, line_num):
+    for input_word in line.split():
+        retcode, before, after = get_word_prefix_suffix(input_word, uk_word)
+        if retcode:
+            if m_ary_search(prefixes, before):
+                if m_ary_search(suffixes, after):
+                    print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
+                elif m_ary_search(suffixes, remove_chars_from_text(after, 's')):
+                    print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
 
 
 def is_legal_extension(filepath):
@@ -56,13 +60,15 @@ def search_files(directory):
             if not is_legal_extension(filepath):
                 continue
 
-            with open(filepath, "r") as f:
-                for line in f:
-                    for uk_word in british_words:
-                        capital = uk_word.capitalize()
-                        if (find_word_in_line(uk_word, line, filepath) or find_word_in_line(capital, line, filepath)):
-                            british_words.remove(uk_word)
-                            break
+            with open(filepath, "r") as f: # for each file
+                line_num = 0
+                for line in f: # for each line
+                    line_num += 1
+                    if ('/' in line or '-' in line) and " " not in line:
+                        print(f"SKIPPING LINE: '{line}' in: '{filepath}' at line: {line_num}")
+                        continue
+                    for uk_word in british_words: # for each uk word
+                        find_word_in_line(uk_word, line, filepath, line_num)
 
 # storys stories exception
 # monologue monolog exception
@@ -100,7 +106,7 @@ if __name__ == "__main__":
         'plasty', 'factory', 'aholic', 'ality', 'worthy', 'oholic', 'philic', 'scope', 'ling', 'ssion', 'ibility',
         'ies', 'ly', 'ent', 'ese', 'most', 'able', 'ify', 'ward', 'th', 'ety', 'wards', 'cy', 'cious', 'ide',
         'sion', 'ade', 'tious', 'ative', 'ocracy', 'ist', 'an', 'ious', 'logy', 'maniac', 'athon', 'phobic',
-        'ty', 'ian', 'otomy', 'ive', 'emia', 'ivity', 'ose', 'ary', 'en', 'tron', 'hood', 'cide', 'ine', 'es',
+        'ty', 'ian', 'otomy', 'ive', 'emia', 'ivity', 'ose', 'ary', 'en', 'tron', 'hood', 'cide', 'ine',
         'oid', 'ment', 'ship', 'let', 'ility', 'ae', 'thon', 'scape',
     ]
 
@@ -140,6 +146,4 @@ if __name__ == "__main__":
     prefixes.sort()
     suffixes.sort()
     british_words.sort()
-    print(prefixes[m_ary_search(prefixes, "abeautiful")])
-    exit()
     search_files(directory)
