@@ -22,35 +22,31 @@ def remove_chars_from_text(text, chars):
     trans_table = str.maketrans('', '', chars)
     return text.translate(trans_table)
 
+def get_word_prefix_suffix(input_word, sub_word):
+    search_in = remove_chars_from_text(input_word, ',."\';\:!?[]()}{')
+    index = search_in.find(sub_word)
+    if index != -1:
+        before = input_word[:index]
+        after = input_word[index + len(sub_word):]
+        return True, before, after
+    else:
+        return False, "", ""
 
-""" this function returns the prefix, suffix, and the final word to replace with"""
-# def get_prefix_suffix_final_word(org_word, uk_word):
-#     search_in = remove_chars_from_text(org_word, ',.\"\';\:!?[]()}{')
-#     index = search_in.find(uk_word)
-#     if index != -1:
-#         pre = org_word[:index]
-#         suf = org_word[index + len(uk_word):]
-#         replace_with = pre + uk_word + suf
-#         return True, pre, suf, replace_with
-#     else:
-#         return False, "", ""
-
-
-""" this function replaces the uk word with the input word"""
-def replace_words_in_line(uk_word, line, filepath, line_num):
-    for input_word in line.split(): # for each word in the line
-
-
-        # retcode, before, after, replace_with = get_word_prefix_suffix(input_word, uk_word)
-        # if retcode:
-            # if m_ary_search(prefixes, before):
-                # if m_ary_search(suffixes, after):
+def find_word_in_line(uk_word, line, filepath, line_num):
+    for input_word in line.split():
+        retcode, before, after = get_word_prefix_suffix(input_word.lower(), uk_word)
+        if retcode:
+            if m_ary_search(prefixes, before):
+                if m_ary_search(suffixes, after):
                     # print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
-                # elif m_ary_search(suffixes, remove_chars_from_text(after, 's')):
+                    # print(f"'{input_word}' in file '{filepath}' at line {line_num}")
+                    print(f"'{input_word}'")
+                elif m_ary_search(suffixes, remove_chars_from_text(after, 's')):
+                    print(f"'{input_word}'")
+                    # print(f"'{input_word}' in file '{filepath}' at line {line_num}")
                     # print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
 
 
-""" this function checks if the file extension is legal"""
 def is_legal_extension(filepath):
     for ext in legal_file_extensions:
         if filepath.endswith(ext):
@@ -58,24 +54,25 @@ def is_legal_extension(filepath):
     return False
 
 
-""" this function searches for the uk words in the files"""
 def search_files(directory):
     for root, _, files in os.walk(directory):
-        for filename in files: # for each file
+        if british_words == []:
+            exit()
+        for filename in files:
             filepath = os.path.join(root, filename)
 
-            if not is_legal_extension(filepath): # making sure the file is a legal extension
+            if not is_legal_extension(filepath):
                 continue
 
-            with open(filepath, "r") as f: # open the file
+            with open(filepath, "r") as f: # for each file
                 line_num = 0
                 for line in f: # for each line
                     line_num += 1
-                    # if ('/' in line or '-' in line) and " " not in line:
-                    #     # print(f"SKIPPING LINE: '{line}' in: '{filepath}' at line: {line_num}")
-                    #     continue
+                    if ('/' in line or '-' in line) and " " not in line:
+                        # print(f"SKIPPING LINE: '{line}' in: '{filepath}' at line: {line_num}")
+                        continue
                     for uk_word in british_words: # for each uk word
-                        replace_words_in_line(uk_word, line, filepath, line_num)
+                        find_word_in_line(uk_word, line, filepath, line_num)
 
 # storys stories exception
 # monologue monolog exception
@@ -85,6 +82,7 @@ def search_files(directory):
 if __name__ == "__main__":
     directory_1 = "/home/roeet/Projects/tyk-docs/tyk-docs/content"
     directory_2 = "/home/roeet/Projects/tyk-docs/tyk-docs/data"
+    # test_dir = "/home/roeet/Projects/uk-to-us/test"
     # NOTE config.toml
     # maybe add .sh .xml?
     legal_file_extensions = [".html", ".json", ".md", ".yml", ".yaml", ".css", ".scss", ".sh", ".xml"]
@@ -153,3 +151,4 @@ if __name__ == "__main__":
     british_words.sort()
     search_files(directory_1)
     search_files(directory_2)
+    # search_files(test_dir)

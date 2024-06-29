@@ -1,19 +1,27 @@
-def remove_chars_from_text(text, chars):
-    trans_table = str.maketrans('', '', chars)
-    return text.translate(trans_table)
+def replace_words(input_file, output_file, replacements):
+    try:
+        with open(input_file, 'r') as file:
+            content = file.read()
+        
+        for old_word, new_word in replacements.items():
+            content = content.replace(old_word, new_word)
+        
+        with open(output_file, 'w') as file:
+            file.write(content)
+        
+        print(f"Replacement complete. Result saved to {output_file}")
+    except FileNotFoundError:
+        print(f"Error: The file {input_file} was not found.")
+    except IOError:
+        print("Error: An I/O error occurred.")
 
-def get_word_prefix_suffix(org_word, uk_word):
-    no_punc_word = remove_chars_from_text(org_word.lower(), ',.\"\';:!?[]()}{')
-    index = no_punc_word.find(uk_word)
-    if index != -1:
-        pre = org_word[:index]
-        suf = org_word[index + len(uk_word):]
-        return True, pre, suf, org_word.replace(no_punc_word, pre + uk_word + suf)
-    else:
-        return False, "", ""
+# Example usage
+input_file = 'input.txt'
+output_file = 'output.txt'
+replacements = {
+    'old': 'new',
+    'hello': 'hi',
+    'world': 'earth'
+}
 
-
-org_word = "\"hello!?\""
-uk_word = "hey"
-
-print(get_word_prefix_suffix(org_word, uk_word))
+replace_words(input_file, output_file, replacements)
