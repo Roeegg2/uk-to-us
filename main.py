@@ -22,27 +22,35 @@ def remove_chars_from_text(text, chars):
     trans_table = str.maketrans('', '', chars)
     return text.translate(trans_table)
 
-def get_word_prefix_suffix(main_word, sub_word):
-    search_in = remove_chars_from_text(main_word.lower(), ',."\';\:!?')
-    index = search_in.find(sub_word)
-    if index != -1:
-        before = main_word[:index]
-        after = main_word[index + len(sub_word):]
-        return True, before, after
-    else:
-        return False, "", ""
 
-def find_word_in_line(uk_word, line, filepath, line_num):
-    for input_word in line.split():
-        retcode, before, after = get_word_prefix_suffix(input_word, uk_word)
-        if retcode:
-            if m_ary_search(prefixes, before):
-                if m_ary_search(suffixes, after):
-                    print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
-                elif m_ary_search(suffixes, remove_chars_from_text(after, 's')):
-                    print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
+""" this function returns the prefix, suffix, and the final word to replace with"""
+# def get_prefix_suffix_final_word(org_word, uk_word):
+#     search_in = remove_chars_from_text(org_word, ',.\"\';\:!?[]()}{')
+#     index = search_in.find(uk_word)
+#     if index != -1:
+#         pre = org_word[:index]
+#         suf = org_word[index + len(uk_word):]
+#         replace_with = pre + uk_word + suf
+#         return True, pre, suf, replace_with
+#     else:
+#         return False, "", ""
 
 
+""" this function replaces the uk word with the input word"""
+def replace_words_in_line(uk_word, line, filepath, line_num):
+    for input_word in line.split(): # for each word in the line
+
+
+        # retcode, before, after, replace_with = get_word_prefix_suffix(input_word, uk_word)
+        # if retcode:
+            # if m_ary_search(prefixes, before):
+                # if m_ary_search(suffixes, after):
+                    # print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
+                # elif m_ary_search(suffixes, remove_chars_from_text(after, 's')):
+                    # print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
+
+
+""" this function checks if the file extension is legal"""
 def is_legal_extension(filepath):
     for ext in legal_file_extensions:
         if filepath.endswith(ext):
@@ -50,25 +58,24 @@ def is_legal_extension(filepath):
     return False
 
 
+""" this function searches for the uk words in the files"""
 def search_files(directory):
     for root, _, files in os.walk(directory):
-        if british_words == []:
-            exit()
-        for filename in files:
+        for filename in files: # for each file
             filepath = os.path.join(root, filename)
 
-            if not is_legal_extension(filepath):
+            if not is_legal_extension(filepath): # making sure the file is a legal extension
                 continue
 
-            with open(filepath, "r") as f: # for each file
+            with open(filepath, "r") as f: # open the file
                 line_num = 0
                 for line in f: # for each line
                     line_num += 1
-                    if ('/' in line or '-' in line) and " " not in line:
-                        print(f"SKIPPING LINE: '{line}' in: '{filepath}' at line: {line_num}")
-                        continue
+                    # if ('/' in line or '-' in line) and " " not in line:
+                    #     # print(f"SKIPPING LINE: '{line}' in: '{filepath}' at line: {line_num}")
+                    #     continue
                     for uk_word in british_words: # for each uk word
-                        find_word_in_line(uk_word, line, filepath, line_num)
+                        replace_words_in_line(uk_word, line, filepath, line_num)
 
 # storys stories exception
 # monologue monolog exception
@@ -76,7 +83,8 @@ def search_files(directory):
 
 
 if __name__ == "__main__":
-    directory = "/home/roeet/Projects/tyk-docs"
+    directory_1 = "/home/roeet/Projects/tyk-docs/tyk-docs/content"
+    directory_2 = "/home/roeet/Projects/tyk-docs/tyk-docs/data"
     # NOTE config.toml
     # maybe add .sh .xml?
     legal_file_extensions = [".html", ".json", ".md", ".yml", ".yaml", ".css", ".scss", ".sh", ".xml"]
@@ -112,27 +120,24 @@ if __name__ == "__main__":
 
     british_words = [
         "accoutre", "accoutrement", "acknowledgement", "adaptor", "adaptors", "aerofoil", "aeroplane", "ageing", "aggrandis", 
-        "aluminium", "americanis", 
+        "aluminium", "americanis", "cancelling", "candour", "draught", "draughtsman", "emphasis",
         "americanising", "amphitheatre", "anaemia", "anaemic", "anaesthetic", "anaesthetist", "analogue", "analys", "analysing",
         "apologis", "apologising", "appal", "arbour", "archaeology", "ardour", "armour", "armourer", "armouring", "armoury", 
-        "arse", "artefact", "authoris", "autumn", "axe", 
         "baulk", "behaviour", "behove", "benefitted", "bisulphate", "breathalys", "burglaris", "calibre", "calliper", "cancelled", 
-        "cancelling", "candour",
         "capitalis", "carat", "carburettor", "catalogue", "catalogued", "cataloguing", "catalys", "categoris", "categorisation", 
         "categorising", "centre", "centrefold", "characteris", "cheque", "chilli", "civilisation", "clamour", "cognisance",
         "colonis", "colonisation", "colorisation", "colour", "compositae", "cosy", "counsell", "counsellor", "crayfish", "criticis", 
         "customis", "defenc", "demeanour", "dependant", "dialogue", "dialys", "disc", "distil", "disulphide", "doodah", "doughnut", 
-        "draught", "draughtsman", "emphasis",
         "enamour","encyclopaedia","endeavour","energis","enquire","enquiries","enquiry","enrol","enrolment","enthral","equalled",
         "extemporis","faeces","fantasis","favour","favoured","favourite","favouritism","fervour","fibre","fibreboard","fibreglass",
         "finalis","flavour","foetus","fount","fuelled","fulfil","fulfilment",
         "furore","gauge","generalisation","glamour","goitre","grey","greyed","grovelling","haemoglobin","harbour","harmonis",
-        "honour","honourable","humour","idolis","inflexion","instal","instalment","instil","jeweller","jewellery","judgement",
+        "honour","honourable","humour","idolis","inflexion","instalment","instil","jeweller","jewellery","judgement",
         "kerb","ketchup","kidnapper","kilogramme","kilometre","labelled","labour","labourer","learnt",
         "leukaemia","levell","liberalis","licenc","liquorice","litre","lustre","manoeuvre","maths","maximis","meagre","metre","minimis",
         "misdemeanour","mitre","mobilis","modell","modelling","monetis","monologue","mould",
-        "moulding","moult","moustache","mum","naturalis","neighbour","neighbourhood","nitre","normalis","nought","ochre","odour",
-        "oestrogen","offence","offencive","omelette","optimis","optimising","organis","organisation",
+        "moulding","moult","moustache","naturalis","neighbour","neighbourhood","nitre","normalis","nought","ochre","odour",
+        "oestrogen","offence","offencive","omelette","optimis","organis", "arse", "artefact", "authoris", "autumn", "axe", 
         "paediatric", "panellist", "paralys", "parlour", "pedlar", "pernickety", "personalis", "philtre", "picaninny", "plonk", 
         "plough", "popularis", "potter", "practis", "pretenc", "prioritis", "prise", "programme", "pyjamas", "quarrelling", "rancour", 
         "realis", "recognis", "reconnoitre", "reflexion", "rigour", "rumour", "rumoured", "sabre", "saltpetre", "satiris", "saviour", 
@@ -146,4 +151,5 @@ if __name__ == "__main__":
     prefixes.sort()
     suffixes.sort()
     british_words.sort()
-    search_files(directory)
+    search_files(directory_1)
+    search_files(directory_2)
