@@ -1,5 +1,6 @@
 import os
 
+
 def m_ary_search(arr, target):
     if target == "" or target == None:
         return True
@@ -18,33 +19,44 @@ def m_ary_search(arr, target):
 
     return False
 
+
 def remove_chars_from_text(text, chars):
     trans_table = str.maketrans('', '', chars)
     return text.translate(trans_table)
 
+
 def get_word_prefix_suffix(input_word, sub_word):
-    search_in = remove_chars_from_text(input_word, ',."\';\:!?[]()}{')
-    index = search_in.find(sub_word)
-    if index != -1:
-        before = input_word[:index]
-        after = input_word[index + len(sub_word):]
+    if sub_word in input_word:  # we good, now just make sure subwords match
+        search_in = remove_chars_from_text(input_word, ',."\';\:!?[]()}{')
+        a = search_in.replace(sub_word, "-")
+        # print(a)
+        index = a.find("-")
+        before = a[:index]
+        after = a[index+1:]
+        # print(f"BEFORE: '{before}' AFTER: '{after}' in: '{input_word}' for: '{sub_word}'")
         return True, before, after
     else:
         return False, "", ""
+    # search_in = remove_chars_from_text(input_word, ',."\';\:!?[]()}{')
+    # index = search_in.find(sub_word)
+    # if index != -1:
+    #     before = input_word[:index]
+    #     after = input_word[index + len(sub_word):]
+    #     return True, before, after
+    # else:
+    #     return False, "", ""
+
 
 def find_word_in_line(uk_word, line, filepath, line_num):
     for input_word in line.split():
-        retcode, before, after = get_word_prefix_suffix(input_word.lower(), uk_word)
+        retcode, before, after = get_word_prefix_suffix(
+            input_word.lower(), uk_word)
         if retcode:
             if m_ary_search(prefixes, before):
                 if m_ary_search(suffixes, after):
-                    # print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
-                    # print(f"'{input_word}' in file '{filepath}' at line {line_num}")
-                    print(f"'{input_word}'")
+                    print(f"'{uk_word}'")
                 elif m_ary_search(suffixes, remove_chars_from_text(after, 's')):
-                    print(f"'{input_word}'")
-                    # print(f"'{input_word}' in file '{filepath}' at line {line_num}")
-                    # print(f"found word: '{input_word}' before: '{before}' after: '{after}' uk word: '{uk_word}' in: '{filepath}' at line: {line_num}")
+                    print(f"'{uk_word}'")
 
 
 def is_legal_extension(filepath):
@@ -64,14 +76,14 @@ def search_files(directory):
             if not is_legal_extension(filepath):
                 continue
 
-            with open(filepath, "r") as f: # for each file
+            with open(filepath, "r") as f:  # for each file
                 line_num = 0
-                for line in f: # for each line
+                for line in f:  # for each line
                     line_num += 1
                     if ('/' in line or '-' in line) and " " not in line:
                         # print(f"SKIPPING LINE: '{line}' in: '{filepath}' at line: {line_num}")
                         continue
-                    for uk_word in british_words: # for each uk word
+                    for uk_word in british_words:  # for each uk word
                         find_word_in_line(uk_word, line, filepath, line_num)
 
 # storys stories exception
@@ -83,18 +95,17 @@ if __name__ == "__main__":
     directory_1 = "/home/roeet/Projects/tyk-docs/tyk-docs/content"
     directory_2 = "/home/roeet/Projects/tyk-docs/tyk-docs/data"
     # test_dir = "/home/roeet/Projects/uk-to-us/test"
-    # NOTE config.toml
-    # maybe add .sh .xml?
-    legal_file_extensions = [".html", ".json", ".md", ".yml", ".yaml", ".css", ".scss", ".sh", ".xml"]
+    legal_file_extensions = [".html", ".json", ".md",
+                             ".yml", ".yaml", ".css", ".scss", ".sh", ".xml"]
 
     prefixes = [
         "a", "ab", "ac", "ad", "af", "ag", "al", "am", "an", "ap", "ar", "as", "at", "auto",
         "be", "bi", "by", "cata", "circum", "cis", "co", "col", "com", "con", "contra", "counter", "crypto",
         "de", "demi", "di", "dia", "dis", "dys", "e", "ec", "el", "em", "en", "epi", "eu", "ex", "exo", "extra",
         "fore", "hemi", "hetero", "homo", "hyper", "hypo", "neo", "non", "ob", "oct", "omni", "out", "over",
-        "il", "im", "in", "infra", "inter", "intra", "ir", "macro", "mal", "mega", "meta", "micro", "mid", "milli", 
-        "mini", "mis", "mono", "multi", "pan", "para", "penta", "per", "peri", "poly", "post", "pre", "pro", "proto", 
-        "pseudo", "quad", "quasi", "re", "retro", "semi", "sub", "super", "supra", "sur", "sym", "syn", "tele", "trans", 
+        "il", "im", "in", "infra", "inter", "intra", "ir", "macro", "mal", "mega", "meta", "micro", "mid", "milli",
+        "mini", "mis", "mono", "multi", "pan", "para", "penta", "per", "peri", "poly", "post", "pre", "pro", "proto",
+        "pseudo", "quad", "quasi", "re", "retro", "semi", "sub", "super", "supra", "sur", "sym", "syn", "tele", "trans",
         "tri", "ultra", "un", "under", "uni", "up", "vice"
     ]
 
@@ -117,32 +128,32 @@ if __name__ == "__main__":
     ]
 
     british_words = [
-        "accoutre", "accoutrement", "acknowledgement", "adaptor", "adaptors", "aerofoil", "aeroplane", "ageing", "aggrandis", 
+        "accoutre", "accoutrement", "acknowledgement", "adaptor", "adaptors", "aerofoil", "aeroplane", "ageing", "aggrandis",
         "aluminium", "americanis", "cancelling", "candour", "draught", "draughtsman", "emphasis",
-        "americanising", "amphitheatre", "anaemia", "anaemic", "anaesthetic", "anaesthetist", "analogue", "analys", "analysing",
-        "apologis", "apologising", "appal", "arbour", "archaeology", "ardour", "armour", "armourer", "armouring", "armoury", 
-        "baulk", "behaviour", "behove", "benefitted", "bisulphate", "breathalys", "burglaris", "calibre", "calliper", "cancelled", 
-        "capitalis", "carat", "carburettor", "catalogue", "catalogued", "cataloguing", "catalys", "categoris", "categorisation", 
+        "americanising", "amphitheatre", "anaemia", "anaemic", "anaesthetic", "anaesthetist", "analogue", "analys",
+        "apologis", "apologising", "appal", "arbour", "archaeology", "ardour", "armour", "armourer", "armouring", "armoury",
+        "baulk", "behaviour", "behove", "benefitted", "bisulphate", "breathalys", "burglaris", "calibre", "calliper", "cancelled",
+        "capitalis", "carat", "carburettor", "catalogue", "catalogued", "cataloguing", "catalys", "categoris", "categorisation",
         "categorising", "centre", "centrefold", "characteris", "cheque", "chilli", "civilisation", "clamour", "cognisance",
-        "colonis", "colonisation", "colorisation", "colour", "compositae", "cosy", "counsell", "counsellor", "crayfish", "criticis", 
-        "customis", "defenc", "demeanour", "dependant", "dialogue", "dialys", "disc", "distil", "disulphide", "doodah", "doughnut", 
-        "enamour","encyclopaedia","endeavour","energis","enquire","enquiries","enquiry","enrol","enrolment","enthral","equalled",
-        "extemporis","faeces","fantasis","favour","favoured","favourite","favouritism","fervour","fibre","fibreboard","fibreglass",
-        "finalis","flavour","foetus","fount","fuelled","fulfil","fulfilment",
-        "furore","gauge","generalisation","glamour","goitre","grey","greyed","grovelling","haemoglobin","harbour","harmonis",
-        "honour","honourable","humour","idolis","inflexion","instalment","instil","jeweller","jewellery","judgement",
-        "kerb","ketchup","kidnapper","kilogramme","kilometre","labelled","labour","labourer","learnt",
-        "leukaemia","levell","liberalis","licenc","liquorice","litre","lustre","manoeuvre","maths","maximis","meagre","metre","minimis",
-        "misdemeanour","mitre","mobilis","modell","modelling","monetis","monologue","mould",
-        "moulding","moult","moustache","naturalis","neighbour","neighbourhood","nitre","normalis","nought","ochre","odour",
-        "oestrogen","offence","offencive","omelette","optimis","organis", "arse", "artefact", "authoris", "autumn", "axe", 
-        "paediatric", "panellist", "paralys", "parlour", "pedlar", "pernickety", "personalis", "philtre", "picaninny", "plonk", 
-        "plough", "popularis", "potter", "practis", "pretenc", "prioritis", "prise", "programme", "pyjamas", "quarrelling", "rancour", 
-        "realis", "recognis", "reconnoitre", "reflexion", "rigour", "rumour", "rumoured", "sabre", "saltpetre", "satiris", "saviour", 
+        "colonis", "colonisation", "colorisation", "colour", "compositae", "cosy", "counsell", "counsellor", "crayfish", "criticis",
+        "customis", "defenc", "demeanour", "dependant", "dialogue", "dialys", "disc", "distil", "disulphide", "doodah", "doughnut",
+        "enamour", "encyclopaedia", "endeavour", "energis", "enquire", "enquiries", "enquiry", "enrol", "enrolment", "enthral", "equalled",
+        "extemporis", "faeces", "fantasis", "favour", "favoured", "favourite", "favouritism", "fervour", "fibre", "fibreboard", "fibreglass",
+        "finalis", "flavour", "foetus", "fount", "fuelled", "fulfil", "fulfilment",
+        "furore", "gauge", "generalisation", "glamour", "goitre", "grey", "greyed", "grovelling", "haemoglobin", "harbour", "harmonis",
+        "honour", "honourable", "humour", "idolis", "inflexion", "instalment", "instil", "jeweller", "jewellery", "judgement",
+        "kerb", "ketchup", "kidnapper", "kilogramme", "kilometre", "labelled", "labour", "labourer", "learnt",
+        "leukaemia", "levell", "liberalis", "licenc", "liquorice", "litre", "lustre", "manoeuvre", "maths", "maximis", "meagre", "metre", "minimis",
+        "misdemeanour", "mitre", "mobilis", "modell", "modelling", "monetis", "monologue", "mould",
+        "moulding", "moult", "moustache", "naturalis", "neighbour", "neighbourhood", "nitre", "normalis", "nought", "ochre", "odour",
+        "oestrogen", "offence", "offencive", "omelette", "optimis", "organis", "arse", "artefact", "authoris", "autumn", "axe",
+        "paediatric", "panellist", "paralys", "parlour", "pedlar", "pernickety", "personalis", "philtre", "picaninny", "plonk",
+        "plough", "popularis", "potter", "practis", "pretenc", "prioritis", "prise", "programme", "pyjamas", "quarrelling", "rancour",
+        "realis", "recognis", "reconnoitre", "reflexion", "rigour", "rumour", "rumoured", "sabre", "saltpetre", "satiris", "saviour",
         "savour", "scallywag", "sceptic", "sceptical", "sceptre", "signaled",
-        "signaling", "skilful", "smoulder", "snowplough", "socialis", "socialising", "sombre", "specialis", "speciality", "spectre", 
-        "spelled", "splendour", "splendour", "stabilis", "standardis", "storey", "storeys", "succour", "sulphate", "sulphur", 
-        "symbolis", "sympathis", "syphon", "theatre", "titbit", "travelled", "traveller", "travelling", "tumour", "tyre", 
+        "signaling", "skilful", "smoulder", "snowplough", "socialis", "socialising", "sombre", "specialis", "speciality", "spectre",
+        "spelled", "splendour", "splendour", "stabilis", "standardis", "storey", "storeys", "succour", "sulphate", "sulphur",
+        "symbolis", "sympathis", "syphon", "theatre", "titbit", "travelled", "traveller", "travelling", "tumour", "tyre",
         "tzar", "utilis", "valour", "vandalis", "vaporis", "vapour", "vigour", "waggon", "whisky", "wilful", "woollen", "worshipper",
     ]
 
