@@ -10,8 +10,8 @@ uk_bases = ['acknowledgement', 'analys', 'authoris', 'behaviour', 'cancelled', '
 us_bases = ['acknowledgment', 'analyz', 'authoriz', 'behavior', 'canceled', 'capitaliz', 'catalog', 'categoriz', 'center', 'characteriz', 'color', 'customiz', 'defens', 'endeavor', 'enroll', 'finaliz', 'flavor', 'fulfill', 'gray', 'honor', 'labeled', 'licens', 'maximiz', 'minimiz', 'model', 'monetiz', 'neighbor', 'normaliz', 'optimiz', 'organiz', 'personaliz', 'prize', 'program', 'recogniz', 'specializ', 'spelled', 'standardiz', 'utiliz', 'willful']
 
 # dir = '/home/roeet/Projects/uk-to-us/test'
-dir0 = '/home/roeet/tyk-docs/tyk-docs/data'
-dir1 = '/home/roeet/tyk-docs/tyk-docs/content'
+dir0 = '/home/roeet/Projects/tyk-docs/tyk-docs/data'
+dir1 = '/home/roeet/Projects/tyk-docs/tyk-docs/content'
 
 def process_files(directory, i):
     total_replacements = 0
@@ -39,6 +39,7 @@ def handle_swap_words(uk_base, us_base, idx, line, lines, filepath, replacements
         return True, replacements + 1
     else:
         print(f"{Fore.YELLOW}Did not replace")
+        return False, replacements
 
 def process_file(filepath, i):
     replacements = 0
@@ -53,7 +54,7 @@ def process_file(filepath, i):
                     continue
                 if uk_bases[i] in word:
                     modified, replacements = handle_swap_words(uk_bases[i], us_bases[i], idx, line, lines, filepath, replacements, word)
-                if uk_bases[i].capitalize() in line:
+                if uk_bases[i].capitalize() in word:
                     modified, replacements = handle_swap_words(uk_bases[i].capitalize(), us_bases[i].capitalize(), idx, line, lines, filepath, replacements, word)
 
         if modified:
@@ -66,7 +67,7 @@ def process_file(filepath, i):
     return replacements
 
 if __name__ == "__main__":
-    i = 1
+    i = 3
     process_files(dir0, i)
     process_files(dir1, i)
     # process_files(dir, i)
