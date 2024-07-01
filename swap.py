@@ -1,57 +1,3 @@
-# import os
-# from colorama import Fore
-
-# # POTENTIAL ERRORS WITH prise, programme
-# # list length is
-# uk_bases = ['acknowledgement', 'analys', 'authoris', 'behaviour', 'cancelled', 'capitalis', 'catalogue', 'categoris', 'centre', 'characteris', 'colour', 'customis', 'defenc', 'endeavour', 'enrol', 'finalis', 'flavour', 'fulfil', 'grey', 'honour', 'labelled', 'licenc', 'maximis', 'minimis', 'modell', 'monetis', 'neighbour', 'normalis', 'optimis', 'organis', 'personalis', 'prise', 'programme', 'recognis', 'specialis', 'spelt', 'standardis', 'utilis', 'wilful']
-# us_bases = ['acknowledgment', 'analyz', 'authoriz', 'behavior', 'canceled', 'capitaliz', 'catalog', 'categoriz', 'center', 'characteriz', 'color', 'customiz', 'defens', 'endeavor', 'enroll', 'finaliz', 'flavor', 'fulfill', 'gray', 'honor', 'labeled', 'licens', 'maximiz', 'minimiz', 'model', 'monetiz', 'neighbor', 'normaliz', 'optimiz', 'organiz', 'personaliz', 'prize', 'program', 'recogniz', 'specializ', 'spelled', 'standardiz', 'utiliz', 'willful']
-# # dir = '/home/roeet/Projects/uk-to-us/test'
-# dir = '/home/roeet/Projects/tyk-docs/tyk-docs/data'
-# dir = '/home/roeet/Projects/tyk-docs/tyk-docs/content'
-
-# for root, _, files in os.walk(dir):
-#     i = 0
-#     replace = True
-#     for filename in files:
-#         filepath = os.path.join(root, filename)
-#         with open(filepath, "r") as f:
-#             linenum = 1
-#             cnt = 0
-#             lines = f.readlines()  # read all lines at once for potential modification
-#             for idx, line in enumerate(lines):
-#                 if uk_bases[i] in line:
-#                     print(Fore.RED + f"LINENUM: {linenum}")
-#                     print(Fore.BLUE + f"FOUND: '{uk_bases[i]}'")
-#                     print(Fore.GREEN + f"FILE: {filepath}")
-#                     print(Fore.LIGHTMAGENTA_EX + f"LINE: {line}")
-#                     cnt += 1
-#                     if replace:
-#                         # Replace the uk_bases[i] with us_bases[i] in the line
-#                         lines[idx] = line.replace(uk_bases[i], us_bases[i])
-
-#                 linenum += 1
-
-#         # Write modified lines back to the file if replace is True
-#         if replace:
-#             with open(filepath, "w") as f:
-#                 f.writelines(lines)
-
-# if replace:
-#     print(Fore.YELLOW + f"REPLACED: {cnt} instances of '{uk_bases[i]}' with '{us_bases[i]}'")
-
-
-# '''
-# for each file in dir
-# for each line in file
-# for each word in line
-# if word matches with the uk base:
-#     replace us base with the uk base
-
-
-# '''
-
-
-
 import os
 import sys
 from colorama import Fore, init
@@ -78,6 +24,22 @@ def process_files(directory, i):
     
     print(f"\nTotal replacements made: {total_replacements}")
 
+def info_print(filepath, idx, line, uk_base, us_base, word):
+    index = line.find(word)
+
+    print(f"{Fore.WHITE}File: {Fore.MAGENTA}{filepath}")
+    print(f"{Fore.WHITE}Line {idx + 1}: {Fore.GREEN}{line[:index]}{Fore.RED}{word}{Fore.GREEN}{line[index + len(word):]}")
+    print(f"{Fore.WHITE}Replace '{Fore.RED}{uk_base}{Fore.WHITE}' with '{Fore.BLUE}{us_base}{Fore.WHITE}'? (y/n)", end='')
+
+def handle_swap_words(uk_base, us_base, idx, line, lines, filepath, replacements, word): 
+    info_print(filepath, idx, line, uk_base, us_base, word)   
+    if input().lower() != 'n':
+        lines[idx] = line.replace(uk_base, us_base)
+        print(f"{Fore.YELLOW}Replaced successfully")
+        return True, replacements + 1
+    else:
+        print(f"{Fore.YELLOW}Did not replace")
+
 def process_file(filepath, i):
     replacements = 0
     try:
@@ -86,18 +48,13 @@ def process_file(filepath, i):
 
         modified = False
         for idx, line in enumerate(lines):
-            if uk_bases[i] in line:
-                print(f"{Fore.WHITE}File: {Fore.MAGENTA}{filepath}")
-                print(f"{Fore.WHITE}Line {idx + 1}: {Fore.GREEN}{line.strip()}")
-                print(f"{Fore.WHITE}Replace '{Fore.RED}{uk_bases[i]}{Fore.WHITE}' with '{Fore.BLUE}{us_bases[i]}{Fore.WHITE}'? (y/n)", end='')
-                
-                if input().lower() == 'y':
-                    lines[idx] = line.replace(uk_bases[i], us_bases[i])
-                    replacements += 1
-                    modified = True
-                    print(f"{Fore.YELLOW}Replaced successfully")
-                else:
-                    print(f"{Fore.YELLOW}Did not replace")
+            for word in line.split():
+                if '-' in word or '/' in word:
+                    continue
+                if uk_bases[i] in word:
+                    modified, replacements = handle_swap_words(uk_bases[i], us_bases[i], idx, line, lines, filepath, replacements, word)
+                if uk_bases[i].capitalize() in line:
+                    modified, replacements = handle_swap_words(uk_bases[i].capitalize(), us_bases[i].capitalize(), idx, line, lines, filepath, replacements, word)
 
         if modified:
             with open(filepath, "w", encoding="utf-8") as f:
@@ -109,9 +66,10 @@ def process_file(filepath, i):
     return replacements
 
 if __name__ == "__main__":
-    i = 0
+    i = 1
     process_files(dir0, i)
     process_files(dir1, i)
+    # process_files(dir, i)
 
 # i = 0
 # cnt = 0
